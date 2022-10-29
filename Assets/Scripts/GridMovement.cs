@@ -12,7 +12,7 @@ public class GridMovement : MonoBehaviour
     private TokensMovementManager movementManager;
     public GameObject Tokens;
     private float timeToMove = 0.15f;
-    public float shakeDuration = 0.3f;
+    public float shakeDuration = 0.2f;
     //[SerializeField]
     public AnimationCurve curve;
 
@@ -64,18 +64,22 @@ public class GridMovement : MonoBehaviour
         }
 
         if (Input.GetKeyUp(KeyCode.Space) && !isMoving) {
-            if (!isMovingBlock) {
+            if (!isMovingBlock && movementManager.CanSelect()) {
                 GameObject selectedToken = movementManager.SelectToken();
                 if (selectedToken != null) {
                     this.transform.localScale = new Vector3(0.1f, 0.1f, 1);
                     selectedToken.transform.parent = this.transform;
                     isMovingBlock = true;
-                    
                 }
-            } else {
+                Debug.Log("Block Selected");
+            } else if (isMovingBlock) {
+                Debug.Log("Block Dropped");
                 isMovingBlock = false;
                 movementManager.DropToken(this.transform.GetChild(0).gameObject);
                 this.transform.localScale = new Vector3(0.125f, 0.125f, 1);
+            } else {
+                StartCoroutine(Shake());
+                Debug.Log("No Block");
             }
         }
     }

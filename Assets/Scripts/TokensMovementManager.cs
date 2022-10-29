@@ -8,7 +8,8 @@ public class TokensMovementManager : MonoBehaviour
     public Canvas canvas;
     public GameObject winMessage;
     public bool isInputEnabled = true;
-    const int block = -1;
+    const int wall = -2;
+    const int blockHead = -1;
     const int red = 5;
     const int orange = 3;
     const int yellow = 1;
@@ -18,13 +19,13 @@ public class TokensMovementManager : MonoBehaviour
     public GameObject fruits;
     
     private int[,] grid = {
-        {block, block,  block, block,  block, block,  block},
-        {block, orange, block, yellow, block, orange, block},
-        {block, red,    0,     yellow, 0,     orange, block},
-        {block, yellow, block, red,    block, red,    block},
-        {block, orange, 0,     orange, 0,     yellow, block},
-        {block, red,    block, red,    block, yellow, block,},
-        {block, block,  block, block,  block, block,  block}};
+        {wall, wall,  wall, wall,  wall, wall,  wall},
+        {wall, orange, blockHead, yellow, blockHead, orange, wall},
+        {wall, red,    0,     yellow, 0,     orange, wall},
+        {wall, yellow, blockHead, red,    blockHead, red,    wall},
+        {wall, orange, 0,     orange, 0,     yellow, wall},
+        {wall, red,    blockHead, red,    blockHead, yellow, wall,},
+        {wall, wall,  wall, wall,  wall, wall,  wall}};
 
     private (int, int) currentPosition = (3, 3);
     private int selectedToken = 0;
@@ -44,24 +45,28 @@ public class TokensMovementManager : MonoBehaviour
     
     }
 
-    public bool CanMove(bool isMovingBlock, (int, int) direction) {
-        if (!isMovingBlock && grid[currentPosition.Item1 + direction.Item1, currentPosition.Item2 + direction.Item2] != block) {
+    public bool CanMove(bool isMovingToken, (int, int) direction) {
+        if (!isMovingToken && grid[currentPosition.Item1 + direction.Item1, currentPosition.Item2 + direction.Item2] != wall) {
             // currentPosition.Item1 += direction.Item1;
             // currentPosition.Item2 += direction.Item2;
             return true;
         } 
-        if (isMovingBlock && grid[currentPosition.Item1 + direction.Item1, currentPosition.Item2 + direction.Item2] == 0) {
+        if (isMovingToken && grid[currentPosition.Item1 + direction.Item1, currentPosition.Item2 + direction.Item2] == 0) {
             return true;
         }
 
         return false;
     }
 
-    public void Move((int, int) direction, bool isMovingBlock) {
+    public bool CanSelect() {
+        return grid[currentPosition.Item1, currentPosition.Item2] >= 1;
+    }
+
+    public void Move((int, int) direction, bool isMovingToken) {
         currentPosition.Item1 += direction.Item1;
         currentPosition.Item2 += direction.Item2;
 
-        // if (isMovingBlock) {
+        // if (isMovingToken) {
         //     grid[currentPosition.Item1, currentPosition.Item2] = selectedToken;
             
         // }
