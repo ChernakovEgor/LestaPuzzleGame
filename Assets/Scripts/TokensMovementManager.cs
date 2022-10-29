@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TokensMovementManager : MonoBehaviour
 {
-    public GameObject fadeScreen;
+    public Canvas canvas;
     public GameObject winMessage;
     public bool isInputEnabled = true;
     const int block = -1;
@@ -13,6 +14,8 @@ public class TokensMovementManager : MonoBehaviour
     const int yellow = 1;
 
     private GameObject[] tokens;
+
+    public GameObject fruits;
     
     private int[,] grid = {
         {block, block,  block, block,  block, block,  block},
@@ -28,6 +31,7 @@ public class TokensMovementManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        canvas.GetComponent<Image>().canvasRenderer.SetAlpha(0.0f);
         tokens = new GameObject[15];
         for (int i = 0; i < 15; i++) {
             tokens[i] = this.gameObject.transform.GetChild(i).gameObject;
@@ -88,9 +92,16 @@ public class TokensMovementManager : MonoBehaviour
         token.transform.parent = this.transform;
         if (checkWinCondition()) {
             isInputEnabled = false;
-            fadeScreen.SetActive(true);
+            canvas.GetComponent<Image>().CrossFadeAlpha(0.7f, 1.0f, false);
             winMessage.SetActive(true);
+            fruits.SetActive(true);
         }
+    }
+
+    public void Fade() {
+        winMessage.SetActive(true);
+        canvas.GetComponent<Image>().CrossFadeAlpha(0.7f, 1.0f, false);
+        fruits.SetActive(true);
     }
 
     bool checkWinCondition() {
