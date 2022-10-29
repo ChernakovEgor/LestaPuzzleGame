@@ -9,8 +9,9 @@ public class GridMovement : MonoBehaviour
     private bool isMovingBlock = false;
     private Vector3 originalPosition;
     private Vector3 targetPosition;
-    public MovementManager movementManager;
-    private float timeToMove = 0.2f;
+    private TokensMovementManager movementManager;
+    public GameObject Tokens;
+    private float timeToMove = 0.15f;
     public float shakeDuration = 0.3f;
     //[SerializeField]
     public AnimationCurve curve;
@@ -19,7 +20,7 @@ public class GridMovement : MonoBehaviour
     void Start()
     {
         originalPosition = transform.position;
-        movementManager = new MovementManager();
+        movementManager = Tokens.GetComponent<TokensMovementManager>();
         isMovingBlock = false;
     }
 
@@ -28,7 +29,7 @@ public class GridMovement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.UpArrow) && !isMoving) {
             if (movementManager.CanMove(isMovingBlock, (-1, 0))) {
-                movementManager.Move((-1, 0));
+                movementManager.Move((-1, 0), isMovingBlock);
                 StartCoroutine(MoveCursor(Vector3.up));
             } else {
                 StartCoroutine(Shake());
@@ -37,7 +38,7 @@ public class GridMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.DownArrow) && !isMoving) {
 
             if (movementManager.CanMove(isMovingBlock, (1, 0))) {
-                movementManager.Move((1, 0));
+                movementManager.Move((1, 0), isMovingBlock);
                 StartCoroutine(MoveCursor(Vector3.down));
             } else {
                 StartCoroutine(Shake());
@@ -45,7 +46,7 @@ public class GridMovement : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.LeftArrow) && !isMoving) {
             if (movementManager.CanMove(isMovingBlock, (0, -1))) {
-                movementManager.Move((0, -1));
+                movementManager.Move((0, -1), isMovingBlock);
                 StartCoroutine(MoveCursor(Vector3.left));
             } else {
                 StartCoroutine(Shake());
@@ -53,12 +54,27 @@ public class GridMovement : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.RightArrow) && !isMoving) {
             if (movementManager.CanMove(isMovingBlock, (0, 1))) {
-                movementManager.Move((0, 1));
+                movementManager.Move((0, 1), isMovingBlock);
                 StartCoroutine(MoveCursor(Vector3.right));
             } else {
                 StartCoroutine(Shake());
             }
         }
+
+        if (Input.GetKeyUp(KeyCode.Space) && !isMoving) {
+            if (!isMovingBlock) {
+                GameObject selectedToken = movementManager.SelectToken();
+                if (selectedToken != null) {
+                    selectedToken.transform.parent = this.transform;
+                    isMovingBlock = true;
+                }
+            } else {
+                isMovingBlock = false;
+                movementManager.DropToken(this.transform.GetChild(0).gameObject);
+            }
+        }
+        
+        
     }
 
     private IEnumerator MoveCursor(Vector3 direction) {
