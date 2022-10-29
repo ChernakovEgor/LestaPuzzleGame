@@ -5,7 +5,7 @@ using UnityEngine;
 public class GridMovement : MonoBehaviour
 {
 
-    private bool isMoving;
+    private bool isMoving = false;
     private bool isMovingBlock = false;
     private Vector3 originalPosition;
     private Vector3 targetPosition;
@@ -21,12 +21,14 @@ public class GridMovement : MonoBehaviour
     {
         originalPosition = transform.position;
         movementManager = Tokens.GetComponent<TokensMovementManager>();
-        isMovingBlock = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!movementManager.isInputEnabled) {
+            return;
+        }
         if (Input.GetKey(KeyCode.UpArrow) && !isMoving) {
             if (movementManager.CanMove(isMovingBlock, (-1, 0))) {
                 movementManager.Move((-1, 0), isMovingBlock);
@@ -65,16 +67,17 @@ public class GridMovement : MonoBehaviour
             if (!isMovingBlock) {
                 GameObject selectedToken = movementManager.SelectToken();
                 if (selectedToken != null) {
+                    this.transform.localScale = new Vector3(0.1f, 0.1f, 1);
                     selectedToken.transform.parent = this.transform;
                     isMovingBlock = true;
+                    
                 }
             } else {
                 isMovingBlock = false;
                 movementManager.DropToken(this.transform.GetChild(0).gameObject);
+                this.transform.localScale = new Vector3(0.125f, 0.125f, 1);
             }
         }
-        
-        
     }
 
     private IEnumerator MoveCursor(Vector3 direction) {

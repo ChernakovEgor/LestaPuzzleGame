@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class TokensMovementManager : MonoBehaviour
 {
-    const int block = 1;
-    const int red = 2;
+    public GameObject fadeScreen;
+    public GameObject winMessage;
+    public bool isInputEnabled = true;
+    const int block = -1;
+    const int red = 5;
     const int orange = 3;
-    const int yellow = 4;
+    const int yellow = 1;
 
     private GameObject[] tokens;
-    //bool isMovingBlock = false;
+    
     private int[,] grid = {
         {block, block,  block, block,  block, block,  block},
         {block, orange, block, yellow, block, orange, block},
@@ -53,6 +56,15 @@ public class TokensMovementManager : MonoBehaviour
     public void Move((int, int) direction, bool isMovingBlock) {
         currentPosition.Item1 += direction.Item1;
         currentPosition.Item2 += direction.Item2;
+
+        // if (isMovingBlock) {
+        //     grid[currentPosition.Item1, currentPosition.Item2] = selectedToken;
+            
+        // }
+        
+        // if (checkWinCondition()) {
+        //     Debug.Log("Win!");
+        // }
     }
 
     public GameObject SelectToken() {
@@ -74,5 +86,20 @@ public class TokensMovementManager : MonoBehaviour
         grid[currentPosition.Item1, currentPosition.Item2] = selectedToken;
 
         token.transform.parent = this.transform;
+        if (checkWinCondition()) {
+            isInputEnabled = false;
+            fadeScreen.SetActive(true);
+            winMessage.SetActive(true);
+        }
+    }
+
+    bool checkWinCondition() {
+        for (int column = 1; column <= 5; column += 2 ) {
+            for (int row = 1; row <= 5; row++) {
+                if (grid[row, column] != column) return false; 
+            }
+        }
+
+        return true;
     }
 }
