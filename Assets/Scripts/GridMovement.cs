@@ -71,15 +71,12 @@ public class GridMovement : MonoBehaviour
                     selectedToken.transform.parent = this.transform;
                     isMovingBlock = true;
                 }
-                Debug.Log("Block Selected");
             } else if (isMovingBlock) {
-                Debug.Log("Block Dropped");
                 isMovingBlock = false;
                 movementManager.DropToken(this.transform.GetChild(0).gameObject);
                 this.transform.localScale = new Vector3(0.125f, 0.125f, 1);
             } else {
                 StartCoroutine(Shake());
-                Debug.Log("No Block");
             }
         }
     }
